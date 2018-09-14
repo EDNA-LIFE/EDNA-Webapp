@@ -1,2 +1,2 @@
 
-## EDNA Web App Staking Tool
+## EDNA Web App for Staking
