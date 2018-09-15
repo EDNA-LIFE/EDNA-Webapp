@@ -15,7 +15,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "buildc": "npx babel public/assets/js --out-dir build/c-js",
+    "buildc": "npx babel public/assets/js --out-dir build/assets/js",
+    "production": "npm run build && npm run buildc",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

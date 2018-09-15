@@ -3,15 +3,14 @@
 // Version - 1.0.0
 //------------------
 
-        let eosChain = '038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca';
-        let chainURLWP = 'http://dev.cryptolions.io:18888';
-        let chainURL = 'dev.cryptolions.io';
-        let chainPort = '18888';
-        let network = {blockchain:'eos', protocol:'http', host:chainURL, port:chainPort, chainId: eosChain};
+        let eosChain = 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906';
+        let chainURL = 'eos.greymass.com';
+        let chainPort = '443';
+        let network = {blockchain:'eos', protocol:'https', host:chainURL, port:chainPort, chainId: eosChain};
         let eos = scatter.eos(network, Eos);
         // Set Defaults
-        let contractName = 'ednaggtozzz1';
-        let contractSymbal = 'EZXDA';
+        let contractName = 'ednazztokens';
+        let contractSymbal = 'EDNA';
         let contractTable = 'stakes';
         // Hide info until user is logged in.
         let hideScatterLoginSub = document.getElementById("user-sub");
@@ -35,7 +34,7 @@
             debug: false,
             sign: true,
             // mainNet bp endpoint
-            httpEndpoint: chainURLWP,
+            httpEndpoint: chainURL,
             // mainNet chainId
             chainId: eosChain,
         };
@@ -171,25 +170,31 @@
 
         }
 
-                    function scatterAuth() {
-                        // Grant access to scatter
-                        scatter.connect("EDNA Staking Tool").then(function (connected) {
-                            if (!connected) {
-                                console.log('Scatter Not Open or Installed');
-                                modalInstall();
-                            } else if(connected){
-                                hideScatterLoginSub.style.display = "none";
-                                eosAccountFunds.style.display = "none";
-                                reloadDataDisplay.style.display = "none";
-                                getAccountDetails();
-                                this.scatter = ScatterJS.scatter;
-                                window.scatter = null;
-                            }
-                        }).catch(error => {
-                            //console.log(error);
-                            console.log('...');
-                        });
-                    }   scatterAuth();
+
+                        /*=======================*/
+                        /*=== Authentication ====*/
+                        /*=======================*/
+                        function scatterAuth() {
+                            // Grant access to scatter
+                            scatter.connect("EDNA Staking Tool").then(function (connected) {
+                                if (!connected) {
+                                    console.log('Scatter Not Open or Installed');
+                                    modalInstall();
+                                    this.scatter = ScatterJS.scatter;
+                                    window.scatter = null;
+                                } else if(connected){
+                                    hideScatterLoginSub.style.display = "none";
+                                    eosAccountFunds.style.display = "none";
+                                    reloadDataDisplay.style.display = "none";
+                                    getAccountDetails();
+                                    this.scatter = ScatterJS.scatter;
+                                    window.scatter = null;
+                                }
+                            }).catch(error => {
+                                //console.log(error);
+                                console.log('...');
+                            });
+                        }
 
 
                         /*=======================*/
@@ -197,6 +202,7 @@
                         /*=======================*/
 
                         // Get Account from test network
+
                         function getAccountDetails() {
                             scatter.getIdentity({accounts: [network]}).then(function (id) {
                                 const account = id.accounts.find(function (x) {
@@ -214,7 +220,12 @@
 
                                 // callback
                                 eos.getCurrencyBalance(contractName, accountID, contractSymbal,).then(result => {
-                                    document.getElementById("accoutBal").textContent = result;
+                                    if (result > '0.0000'){
+                                        document.getElementById("accoutBal").textContent = result;
+                                    } else{
+                                        document.getElementById("accoutBal").textContent = '0.0000';
+                                    }
+
                                 }).catch(e => {
                                     console.log(e);
                                 });
@@ -227,8 +238,8 @@
                                     json: true
                                 }).then((table) => {
                                     //Remove this
-                                    //console.log(table.rows," --current");
-                                    console.log("Getting User Details =======>");
+                                    console.log(table.rows," --current");
+                                    console.log("Loading Account Details =======>");
 
                                     function getUserDetails(data) {
                                         return data.filter(value => {
@@ -252,10 +263,10 @@
                                     stakeBtnDisplay.style.display = "block";
                                     unstakeBtnDisplay.style.display = "none";
                                     claimednaDisplay.style.display = "none";
-                                    console.log(userInfo[0]);
 
 
                                     if (userInfo.length > 0) {
+                                        //console.log(userInfo[0]);
                                         let accountTable = (userInfo[0].stake_account === accountID);
                                         sd.setUTCSeconds(userInfo[0].stake_due);
                                         if (accountTable) {
@@ -267,6 +278,11 @@
                                             stakeBtnDisplay.style.display = "none";
                                             unstakeBtnDisplay.style.display = "block";
                                         }
+                                            function refreshData(){
+                                                if ( accountTable && userInfo[0].stake_due <= today ) {
+                                                claimednaDisplay.style.display = "block";
+                                            };
+                                        }setInterval(refreshData, 1000);
                                         if (accountTable && userInfo[0].stake_period === 1) {
                                             document.getElementById("stakeType").textContent = 'Weekly';
 
@@ -287,6 +303,9 @@
                                         console.log('<======= Error Getting Data From Table');
                                     }
 
+                                }).catch(e => {
+                                    loginFail();
+                                    console.log(e);
                                 });
                             }).catch(e => {
                                 loginFail();
@@ -451,6 +470,8 @@
                                 location.reload();
                             }, 2500);
                         }
+
+
 
 
 
