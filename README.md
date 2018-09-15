@@ -1,2 +1,2 @@
 
-## EOS Webapp for Staking
+## EDNA Webapp for Staking
