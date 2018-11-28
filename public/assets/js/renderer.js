@@ -235,10 +235,11 @@
                                     code: contractName,
                                     scope: contractName,
                                     table: contractTable,
-                                    json: true
+                                    json: true,
+                                    lower_bound: accountID,
+                                    limit: 1
                                 }).then((table) => {
                                     //Remove this
-                                    console.log(table.rows," --current");
                                     console.log("Loading Account Details =======>");
 
                                     function getUserDetails(data) {
@@ -250,6 +251,7 @@
 
 
                                     let userInfo = getUserDetails(table.rows);
+                                    console.log(userInfo[0].stake_account === accountID);
                                     let sd = new Date(0); // The 0 there is the key, which sets the date to the epoch
 
 
